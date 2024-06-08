@@ -18,10 +18,11 @@ let ballContainerSize = ballContainer.getBoundingClientRect();
 
 // returns random x and y co-ordinate within container boundary
 function getRandomPos(containerHeight, containerWidth) {
+    const s = Math.floor(Math.random() * 10);
 	return {
-		x: Math.floor(Math.random() * containerWidth),
-		y: Math.floor(Math.random() * containerHeight),
-		speed: Math.floor(Math.random() * 10),
+		x: Math.floor(Math.random() * containerWidth - 50),
+		y: Math.floor(Math.random() * containerHeight - 50),
+		speed:  s ? s : 1,
 	};
 }
 
@@ -60,8 +61,9 @@ class Ball {
 	}
 }
 
+
 function displayBall(ball) {
-	ball.move(5);
+	// ball.move();
 	boundaryCollision(ball);
 	ball.draw();
 }
@@ -88,7 +90,7 @@ function boundaryCollision(ball) {
 		ball.dx *= -1;
 }
 
-const balls = generateBalls(10);
+const balls = generateBalls(100);
 
 function updateScreen() {
 	setInterval(() => {
@@ -98,4 +100,4 @@ function updateScreen() {
 	}, 10);
 }
 
-// updateScreen();
+updateScreen();
