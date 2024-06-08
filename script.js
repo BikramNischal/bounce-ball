@@ -13,15 +13,28 @@ ballContainer.style.border = `1px solid #bdbebf`;
 ballContainer.style.position = `relative`;
 ballContainer.style.margin = `0px auto`;
 
+// get container size
+let ballContainerSize = ballContainer.getBoundingClientRect();
+
+// returns random x and y co-ordinate within container boundary
+function getRandomPos(containerHeight, containerWidth) {
+	return {
+		x: Math.floor(Math.random() * containerWidth),
+		y: Math.floor(Math.random() * containerHeight),
+		speed: Math.floor(Math.random() * 10),
+	};
+}
+
 class Ball {
-	constructor(posX = 0, posY = 0, color = "#77a8f7") {
+	constructor(posX = 0, posY = 0, speed = 5,color = "#77a8f7") {
 		//ball position height width and velocity
 		this.x = posX;
 		this.y = posY;
 		this.dx = 1;
 		this.dy = 1;
-		this.h = 40;
-		this.w = 40;
+		this.h = 20;
+		this.w = 20;
+        this.speed = speed;
 
 		//ball styling
 		this.ball = document.createElement("div");
@@ -41,13 +54,32 @@ class Ball {
 	}
 
 	//move the ball by dx,dy
-	move(speed) {
-		this.x += this.dx * speed;
-		this.y += this.dy * speed;
+	move() {
+		this.x += this.dx * this.speed;
+		this.y += this.dy * this.speed;
 	}
 }
 
-function boundryCollision(ball, ballContainerSize) {
+function displayBall(ball) {
+	ball.move(5);
+	boundaryCollision(ball);
+	ball.draw();
+}
+
+function generateBalls(num) {
+	const ballArr = [];
+	for (let i = 0; i < num; ++i) {
+		const pos = getRandomPos(
+			ballContainerSize.height,
+			ballContainerSize.width
+		);
+		ballArr.push(new Ball(pos.x, pos.y, pos.speed));
+	}
+	return ballArr;
+}
+
+//rebounce on boundary collision
+function boundaryCollision(ball) {
 	//collsion detection for y-axis
 	if (ball.y >= ballContainerSize.height - ball.h || ball.y <= 0)
 		ball.dy *= -1;
@@ -56,15 +88,14 @@ function boundryCollision(ball, ballContainerSize) {
 		ball.dx *= -1;
 }
 
-const ball = new Ball(0, 0);
+const balls = generateBalls(10);
+
 function updateScreen() {
 	setInterval(() => {
 		//get client size of container
-		const ballContainerSize = ballContainer.getBoundingClientRect();
-		ball.move(5);
-		boundryCollision(ball, ballContainerSize);
-		ball.draw();
+		ballContainerSize = ballContainer.getBoundingClientRect();
+        balls.forEach(displayBall);
 	}, 10);
 }
 
-updateScreen();
+// updateScreen();
