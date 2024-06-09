@@ -25,8 +25,8 @@ function getRandom(containerHeight, containerWidth) {
 	const yaxis = Math.floor(Math.random() * containerHeight);
 	return {
 		size: diameter < 20 ? 20 : diameter,
-		x: xaxis < 100 ? xaxis : xaxis - 500,
-		y: yaxis < 100 ? yaxis : yaxis - 500,
+		x: xaxis < 200 ? xaxis + 300 : xaxis - 500,
+		y: yaxis < 200 ? yaxis + 300 : yaxis - 500,
 		speed: speed ? speed : 1,
 		dx: Math.random() > 0.5 ? 1 : -1,
 		dy: Math.random() < 0.5 ? -1 : 1,
@@ -71,17 +71,21 @@ class Ball {
 	//move the ball by dx,dy
 	move() {
 		//collision detection for y-axis
-		if (this.y >= ballContainerSize.height - this.h || this.y <= 0)
+		if (this.y >= (ballContainerSize.height - 100) || this.y <= this.h)
 			this.dy *= -1;
 
 		//collision detection for x-axis
-		if (this.x >= ballContainerSize.width - this.h || this.x <= 0)
+		if (this.x >= (ballContainerSize.width - 100) || this.x <= this.w)
 			this.dx *= -1;
 
 		this.x += this.dx * this.speed;
 		this.y += this.dy * this.speed;
-		// this.centerX = this.x + Math.floor(this.w / 2);
-		// this.centerY = this.y + Math.floor(this.h / 2);
+
+		if(this.x < 0) this.x = this.w;
+		if(this.y < 0) this.y = this.h;
+		if(this.x > ballContainerSize) this.x = ballContainerSize.width - this.w;
+		if(this.y > ballContainerSize) this.y = ballContainerSize.height - this.h;
+
 	}
 
 	updateDirection() {
@@ -103,6 +107,10 @@ class Ball {
 
                 otherBall.dx = tempdx;
                 otherBall.dy = tempdy;
+
+				const tempSpeed = this.speed;
+				this.speed = otherBall.speed;
+				otherBall.speed = tempSpeed;
 			}
 	}
 }
@@ -128,7 +136,7 @@ function generateBalls(num) {
 	return ballArr;
 }
 
-const balls = generateBalls(500);
+const balls = generateBalls(50);
 
 function updateScreen() {
     ballContainerSize = ballContainer.getBoundingClientRect();
@@ -146,4 +154,4 @@ function updateScreen() {
 	requestAnimationFrame(updateScreen);
 }
 
-// updateScreen();
+updateScreen();
