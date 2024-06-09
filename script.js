@@ -151,7 +151,7 @@ function updateScreen() {
 
     //for ball collision
 	for (const ball of balls) {
-		// ball.move();
+		ball.move();
 		ball.draw();
 		for (let j = balls.indexOf(ball) + 1; j < balls.length; ++j) {
 			ball.collision(balls[j]);
