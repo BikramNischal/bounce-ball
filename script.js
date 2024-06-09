@@ -14,10 +14,10 @@ ballContainer.style.position = `relative`;
 ballContainer.style.margin = `0px auto`;
 ballContainer.style.padding = "20px";
 
-// get container size
+// get client size of container 
 let ballContainerSize = ballContainer.getBoundingClientRect();
 
-// returns random x and y co-ordinate within container boundary
+// generate a object that contains random speed size position and direction for the ball 
 function getRandom(containerHeight, containerWidth) {
 	const speed = Math.floor(Math.random() * 10);
 	const diameter = Math.floor(Math.random() * 30);
@@ -34,6 +34,7 @@ function getRandom(containerHeight, containerWidth) {
 	};
 }
 
+// generate random colors
 function generateColors(){ 
 	const colorLetters = "0123456789ABCDEF";
 	let color = "#";
@@ -42,6 +43,7 @@ function generateColors(){
 	}
 	return color;
 }
+
 class Ball {
 	constructor(
 		posX = 0,
@@ -77,31 +79,34 @@ class Ball {
 		this.ball.style.top = `${this.y}px`;
 	}
 
-	//move the ball by dx,dy
+	// ball movement and boundary collision detection
 	move() {
-		//collision detection for y-axis
-		if (this.y >= (ballContainerSize.height - 60) || this.y <= this.h)
-			this.dy *= -1;
-
-		//collision detection for x-axis
-		if (this.x >= (ballContainerSize.width - 60) || this.x <= this.w )
-			this.dx *= -1;
-
+		//move the ball
 		this.x += this.dx * this.speed;
 		this.y += this.dy * this.speed;
+
+		//check boundary collision and move away from boundary
+		//collision detection for y-axis
+		if (this.y >= (ballContainerSize.height - 50) || this.y <= this.h){
+			this.dy *= -1;
+			this.y += this.dy * this.speed;
+		}
+
+		//collision detection for x-axis
+		if (this.x >= (ballContainerSize.width - 50) || this.x <= this.w ){	
+			this.dx *= -1;
+			this.x += this.dx * this.speed;
+		}
+
 	}
 
-	updateDirection() {
-		this.dx *= -1;
-		this.dy *= -1;
-	}
-
+	// collision detection between two balls  
 	collision(otherBall) {
 			if (
 				this.x + this.w > otherBall.x &&
 				this.y + this.h > otherBall.y &&
 				otherBall.x + otherBall.w > this.x &&
-				otherBall.y + otherBall.h > this.y
+				otherBall.y + otherBall.h > this.y 
 			) {
                 const tempdx = this.dx;
                 const tempdy = this.dy;
@@ -143,18 +148,18 @@ function generateBalls(num) {
 	return ballArr;
 }
 
-const balls = generateBalls(500);
+const balls = generateBalls(50);
 
 function updateScreen() {
     ballContainerSize = ballContainer.getBoundingClientRect();
 
-
     //for ball collision
 	for (const ball of balls) {
-		ball.move();
+		ball.move(); 
 		ball.draw();
-		for (let j = balls.indexOf(ball) + 1; j < balls.length; ++j) {
-			ball.collision(balls[j]);
+		for (let i = 0; i < balls.length; ++i) {
+			if(i === balls.indexOf(ball)) continue;
+			ball.collision(balls[i]);
 		}
 	}
 
