@@ -12,30 +12,45 @@ ballContainer.style.width = `100%`;
 ballContainer.style.border = `1px solid #bdbebf`;
 ballContainer.style.position = `relative`;
 ballContainer.style.margin = `0px auto`;
+ballContainer.style.padding = "20px";
 
 // get container size
 let ballContainerSize = ballContainer.getBoundingClientRect();
 
 // returns random x and y co-ordinate within container boundary
-function getRandomPos(containerHeight, containerWidth) {
-    const s = Math.floor(Math.random() * 10);
+function getRandom(containerHeight, containerWidth) {
+	const speed = Math.floor(Math.random() * 10);
+	const diameter = Math.floor(Math.random() * 40);
+	const xaxis = Math.floor(Math.random() * containerWidth);
+	const yaxis = Math.floor(Math.random() * containerHeight);
 	return {
-		x: Math.floor(Math.random() * containerWidth - 50),
-		y: Math.floor(Math.random() * containerHeight - 50),
-		speed:  s ? s : 1,
+		size: diameter < 20 ? 20 : diameter,
+		x: xaxis < diameter ? xaxis : xaxis - diameter,
+		y: yaxis < diameter ? yaxis : yaxis - diameter,
+		speed: speed ? speed : 1,
+		dx: Math.random() > 0.5 ? 1 : -1,
+		dy: Math.random() < 0.5 ? -1 : 1,
 	};
 }
 
 class Ball {
-	constructor(posX = 0, posY = 0, speed = 5,color = "#77a8f7") {
+	constructor(
+		posX = 0,
+		posY = 0,
+        size = 20,
+		speed = 5,
+		dx = 1,
+		dy = 1,
+		color = "#77a8f7"
+	) {
 		//ball position height width and velocity
 		this.x = posX;
 		this.y = posY;
-		this.dx = 1;
-		this.dy = 1;
-		this.h = 20;
-		this.w = 20;
-        this.speed = speed;
+		this.dx = dx;
+		this.dy = dy;
+		this.h = size;
+		this.w = size;
+		this.speed = speed;
 
 		//ball styling
 		this.ball = document.createElement("div");
@@ -61,9 +76,8 @@ class Ball {
 	}
 }
 
-
 function displayBall(ball) {
-	// ball.move();
+	ball.move();
 	boundaryCollision(ball);
 	ball.draw();
 }
@@ -71,11 +85,20 @@ function displayBall(ball) {
 function generateBalls(num) {
 	const ballArr = [];
 	for (let i = 0; i < num; ++i) {
-		const pos = getRandomPos(
+		const ballProp = getRandom(
 			ballContainerSize.height,
 			ballContainerSize.width
 		);
-		ballArr.push(new Ball(pos.x, pos.y, pos.speed));
+		ballArr.push(
+			new Ball(
+				ballProp.x,
+				ballProp.y,
+                ballProp.size,
+				ballProp.speed,
+				ballProp.dx,
+				ballProp.dy
+			)
+		);
 	}
 	return ballArr;
 }
@@ -90,14 +113,14 @@ function boundaryCollision(ball) {
 		ball.dx *= -1;
 }
 
-const balls = generateBalls(100);
+const balls = generateBalls(10);
 
 function updateScreen() {
 	setInterval(() => {
 		//get client size of container
 		ballContainerSize = ballContainer.getBoundingClientRect();
-        balls.forEach(displayBall);
+		balls.forEach(displayBall);
 	}, 10);
 }
 
-updateScreen();
+// updateScreen();
