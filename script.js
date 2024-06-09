@@ -21,18 +21,27 @@ let ballContainerSize = ballContainer.getBoundingClientRect();
 function getRandom(containerHeight, containerWidth) {
 	const speed = Math.floor(Math.random() * 10);
 	const diameter = Math.floor(Math.random() * 30);
-	const xaxis = Math.floor(Math.random() * containerWidth);
-	const yaxis = Math.floor(Math.random() * containerHeight);
+	const xaxis = Math.floor(Math.random() * (containerWidth - 100));
+	const yaxis = Math.floor(Math.random() * (containerHeight- 100));
+
 	return {
 		size: diameter < 20 ? 20 : diameter,
-		x: xaxis < 200 ? xaxis + 300 : xaxis - 500,
-		y: yaxis < 200 ? yaxis + 300 : yaxis - 500,
+		x: xaxis < 50 ? xaxis + 50 : xaxis ,
+		y: yaxis < 50 ? yaxis + 50 : yaxis,
 		speed: speed ? speed : 1,
 		dx: Math.random() > 0.5 ? 1 : -1,
 		dy: Math.random() < 0.5 ? -1 : 1,
 	};
 }
 
+function generateColors(){ 
+	const colorLetters = "0123456789ABCDEF";
+	let color = "#";
+	for(let i = 0; i < 6; ++i){
+		color += colorLetters[Math.floor(Math.random()*16)];
+	}
+	return color;
+}
 class Ball {
 	constructor(
 		posX = 0,
@@ -71,21 +80,15 @@ class Ball {
 	//move the ball by dx,dy
 	move() {
 		//collision detection for y-axis
-		if (this.y >= (ballContainerSize.height - 100) || this.y <= this.h)
+		if (this.y >= (ballContainerSize.height - 60) || this.y <= this.h)
 			this.dy *= -1;
 
 		//collision detection for x-axis
-		if (this.x >= (ballContainerSize.width - 100) || this.x <= this.w)
+		if (this.x >= (ballContainerSize.width - 60) || this.x <= this.w )
 			this.dx *= -1;
 
 		this.x += this.dx * this.speed;
 		this.y += this.dy * this.speed;
-
-		if(this.x < 0) this.x = this.w;
-		if(this.y < 0) this.y = this.h;
-		if(this.x > ballContainerSize) this.x = ballContainerSize.width - this.w;
-		if(this.y > ballContainerSize) this.y = ballContainerSize.height - this.h;
-
 	}
 
 	updateDirection() {
@@ -111,6 +114,7 @@ class Ball {
 				const tempSpeed = this.speed;
 				this.speed = otherBall.speed;
 				otherBall.speed = tempSpeed;
+				this.move();
 			}
 	}
 }
@@ -118,10 +122,12 @@ class Ball {
 function generateBalls(num) {
 	const ballArr = [];
 	for (let i = 0; i < num; ++i) {
+		const color = generateColors();
 		const ballProp = getRandom(
 			ballContainerSize.height,
 			ballContainerSize.width
 		);
+
 		ballArr.push(
 			new Ball(
 				ballProp.x,
@@ -129,14 +135,15 @@ function generateBalls(num) {
 				ballProp.size,
 				ballProp.speed,
 				ballProp.dx,
-				ballProp.dy
+				ballProp.dy,
+				color,
 			)
 		);
 	}
 	return ballArr;
 }
 
-const balls = generateBalls(50);
+const balls = generateBalls(500);
 
 function updateScreen() {
     ballContainerSize = ballContainer.getBoundingClientRect();
@@ -144,7 +151,7 @@ function updateScreen() {
 
     //for ball collision
 	for (const ball of balls) {
-		ball.move();
+		// ball.move();
 		ball.draw();
 		for (let j = balls.indexOf(ball) + 1; j < balls.length; ++j) {
 			ball.collision(balls[j]);
