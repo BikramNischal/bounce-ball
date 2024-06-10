@@ -87,26 +87,25 @@ class Ball {
 
 		//check boundary collision and move away from boundary
 		//collision detection for y-axis
-		if (this.y >= ballContainerSize.height - 50 ) {
+		if (this.y >= ballContainerSize.height - 50) {
 			this.dy *= -1;
-			this.y -= this.h/2;
+			this.y -= this.h / 2;
 		}
 
-		if( this.y <= this.h){
+		if (this.y <= this.h) {
 			this.dy *= -1;
-			this.y += this.h/2;
+			this.y += this.h / 2;
 		}
 
 		//collision detection for x-axis
 		if (this.x >= ballContainerSize.width - 50) {
 			this.dx *= -1;
-			this.x -= this.w/2;
+			this.x -= this.w / 2;
 		}
-		if( this.x <= this.w){
+		if (this.x <= this.w) {
 			this.dx *= -1;
-			this.x += this.w/2;
+			this.x += this.w / 2;
 		}
-
 	}
 
 	// rectangular collision detection between two balls
@@ -133,27 +132,31 @@ class Ball {
 	// 		}
 	// }
 
-
-	// circular collision detection 
+	// circular collision detection
 	collision(otherBall) {
+		//calculate euclidean distance between two balls
 		const distanceDx = otherBall.x - this.x;
 		const distanceDy = otherBall.y - this.y;
-		const distance = Math.sqrt(distanceDx * distanceDx + distanceDy * distanceDy);
-		const ballRadius = this.w/2;
-		const otherBallRadius = otherBall.w/2;
+		const distance = Math.sqrt(
+			distanceDx * distanceDx + distanceDy * distanceDy
+		);
+
+		// colculate radius for ball
+		const ballRadius = this.w / 2;
+		const otherBallRadius = otherBall.w / 2;
 
 		if (distance <= ballRadius + otherBallRadius) {
 			const angle = Math.atan2(distanceDy, distanceDx);
 			const sin = Math.sin(angle);
 			const cos = Math.cos(angle);
 
-			//Shifting the ball by 'angle' angle so that 1-D coliision formula can be applied
-			const vx1 = this.dx * cos - this.dy  * sin;
-			const vy1 = this.dy * cos + this.dx  * sin;
-			const vx2 = otherBall.dx *  cos - otherBall.dy   * sin;
-			const vy2 = otherBall.dy *  cos + otherBall.dx * sin;
+			//Shift the ball by 'angle' for 1D coliision 
+			const vx1 = this.dx * cos - this.dy * sin;
+			const vy1 = this.dy * cos + this.dx * sin;
+			const vx2 = otherBall.dx * cos - otherBall.dy * sin;
+			const vy2 = otherBall.dy * cos + otherBall.dx * sin;
 
-			//Calculating the final velocty after collision in 1-D for the elastic collision between the balls
+			//Calculating the final velocty after collision in 1D 
 			const vx1Final =
 				((ballRadius - otherBallRadius) * vx1 +
 					2 * otherBallRadius * vx2) /
@@ -162,18 +165,18 @@ class Ball {
 				((otherBallRadius - ballRadius) * vx2 + 2 * ballRadius * vx1) /
 				(ballRadius + otherBallRadius);
 
-			//Shifting the balls back to the original angle
+			//Shift the balls back to the original angle
 			this.dx = vx1Final * cos + vy1 * sin;
 			this.dy = vy1 * cos - vx1Final * sin;
 			otherBall.dx = vx2Final * cos + vy2 * sin;
 			otherBall.dy = vy2 * cos - vx2Final * sin;
 
-			//To prevent the balls from sticking with each other after collision
+			//prevent the balls from overlapping after collision
 			const overlap = ballRadius + otherBallRadius - distance;
 			const separationX = overlap * cos;
 			const separationY = overlap * sin;
 
-			//Each ball moves by half of seperation distance hence when both balls move by half distance they are seperated by a total of 'seperationX ' and 'seperationY' distance
+			//move each ball by half of seperation distance 
 			this.x -= separationX / 2;
 			this.y -= separationY / 2;
 			otherBall.x += separationX / 2;
@@ -182,6 +185,8 @@ class Ball {
 	}
 }
 
+
+//generate num number of balls and return an array of balls  
 function generateBalls(num) {
 	const ballArr = [];
 	for (let i = 0; i < num; ++i) {
